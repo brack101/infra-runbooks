@@ -1,6 +1,6 @@
 # infra-runbooks
 
-Runbooks und Setup-Anleitungen für selbst gehostete Dienste: Netzwerk, Sicherheitshärtung, Remote-Zugriff und Infrastruktur-Automatisierung.
+Runbooks und Setup-Anleitungen für selbst gehostete Dienste: Netzwerk, Hardening, Remote-Zugriff und Infrastruktur-Automatisierung.
 
 ## Guides
 
