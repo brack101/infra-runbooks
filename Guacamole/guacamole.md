@@ -12,7 +12,7 @@ Internet
 │  │        · Rate Limiting)                     │    │
 │  │   ↓ localhost:8080                          │    │
 │  │ Guacamole + TOTP-Extension (MFA)            │    │
-│  │   ↓ Tailscale 100.x.x.x                    │    │
+│  │   ↓ Tailscale 100.x.x.x                     │    │
 │  └─────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────┘
   ↓ WireGuard-Tunnel (ausgehend, kein offener Port zuhause)
@@ -20,7 +20,7 @@ Internet
 │  Heimnetzwerk                                       │
 │  ┌─────────────────────────────────────────────┐    │
 │  │ Homeserver                                  │    │
-│  │   └── Tailscale-Node                       │    │
+│  │   └── Tailscale-Node                        │    │
 │  └─────────────────────────────────────────────┘    │
 │                                                     │
 │  ├── Linux-Host (SSH)                               │
