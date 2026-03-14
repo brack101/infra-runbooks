@@ -419,6 +419,10 @@ sudo nginx -t && sudo systemctl reload nginx
 
 ## Schritt 8 – UFW Firewall
 
+UFW-Regeln und Certbot Pre/Post-Hooks können zusammen mit dem Setup-Skript gesetzt werden: [ufw-setup.md](ufw-setup.md).
+
+Manuell:
+
 ```bash
 sudo ufw default deny incoming
 sudo ufw default allow outgoing
