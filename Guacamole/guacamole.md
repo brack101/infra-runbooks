@@ -637,7 +637,7 @@ docker image prune -f
 2. Version in `docker-compose.yml` anpassen:
 
 ```bash
-nano docker-compose.yml
+vim docker-compose.yml
 # guacamole/guacamole:1.5.5 → guacamole/guacamole:1.6.0
 # guacamole/guacd:1.5.5     → guacamole/guacd:1.6.0
 ```

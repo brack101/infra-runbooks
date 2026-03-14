@@ -38,7 +38,7 @@ Browser → Nginx (auth_request) → Vouch-Proxy → Google OAuth + MFA
 
 ```bash
 mkdir -p ~/guacamole/vouch
-nano ~/guacamole/vouch/config.yml
+vim ~/guacamole/vouch/config.yml
 ```
 
 ```yaml

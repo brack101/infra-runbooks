@@ -42,7 +42,7 @@ sudo sysctl -w net.ipv6.conf.all.forwarding=1
 Persistent machen – Datei neu anlegen:
 
 ```bash
-sudo nano /etc/sysctl.d/99-tailscale.conf
+sudo vim /etc/sysctl.d/99-tailscale.conf
 ```
 
 Inhalt:
