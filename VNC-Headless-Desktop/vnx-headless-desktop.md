@@ -104,6 +104,8 @@ Type=forking
 ExecStartPre=-/usr/bin/vncserver -kill :%i
 ExecStop=/usr/bin/vncserver -kill :%i
 ExecStart=/usr/bin/vncserver :%i -geometry 1920x1080 -depth 24 -localhost no
+Restart=always
+RestartSec=3
 
 [Install]
 WantedBy=default.target
@@ -169,6 +171,24 @@ journalctl --user -xeu vncserver@1 --no-pager
 rm -f /tmp/.X1-lock /tmp/.X11-unix/X1
 ```
 
+### Kein Reconnect nach XFCE-Logout
+
+Wenn du dich innerhalb der XFCE-Session abmeldest, beendet sich `startxfce4` → `dbus-launch --exit-with-session` exitiert → VNC-Server terminiert. Ohne `Restart=always` ist danach keine Verbindung mehr möglich.
+
+**Lösung:** Service-Datei anpassen und neu laden:
+
+```bash
+# ~/.config/systemd/user/vncserver@.service
+# Folgende Zeilen unter [Service] ergänzen:
+# Restart=always
+# RestartSec=3
+
+systemctl --user daemon-reload
+systemctl --user restart vncserver@1
+```
+
+Nach dem nächsten XFCE-Logout startet der VNC-Server automatisch neu und Guacamole kann sich erneut verbinden.
+
 ### Display-Konflikt (anderes Display belegt)
 
 Display `:2` verwenden (Port `5902`):
@@ -187,3 +207,4 @@ Guacamole-Connection entsprechend auf Port `5902` anpassen.
 | Schwarzer Bildschirm | XFCE kollidiert mit bestehender Session | `dbus-launch` in xstartup verwenden |
 | `server already running` | Stale Lock-Files | `/tmp/.X1-lock` und `/tmp/.X11-unix/X1` löschen |
 | Firefox startet nicht | Snap-Version inkompatibel mit VNC | `firefox-esr` als Deb installieren (Debian), kein Snap |
+| Kein Reconnect nach Logout | XFCE-Logout beendet VNC-Prozess | `Restart=always` im Systemd-Service (siehe unten) |
