@@ -187,5 +187,3 @@ Guacamole-Connection entsprechend auf Port `5902` anpassen.
 | Schwarzer Bildschirm | XFCE kollidiert mit bestehender Session | `dbus-launch` in xstartup verwenden |
 | `server already running` | Stale Lock-Files | `/tmp/.X1-lock` und `/tmp/.X11-unix/X1` löschen |
 | Firefox startet nicht | Snap-Version inkompatibel mit VNC | `firefox-esr` als Deb installieren (Debian), kein Snap |
-| Tailscale in LXC | Kein TUN-Device | KVM-VM verwenden statt LXC-Container |
-| SSH `Too many authentication failures` | 1Password bietet zu viele Keys an | `ssh -o IdentitiesOnly=yes -i <key>` oder `ssh -o PubkeyAuthentication=no` |
