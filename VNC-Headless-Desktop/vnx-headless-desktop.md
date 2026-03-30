@@ -56,6 +56,14 @@ sudo tailscale up
 tailscale ip -4  # IP für Guacamole-Connection notieren
 ```
 
+Tailscale-DNS deaktivieren damit interner DNS erhalten bleibt:
+
+```bash
+sudo tailscale set --accept-dns=false
+```
+
+> Ohne diesen Schritt überschreibt Tailscale `/etc/resolv.conf` und die interne Namensauflösung schlägt fehl.
+
 ---
 
 ## VNC-Setup
