@@ -11,3 +11,4 @@ Runbooks und Setup-Anleitungen für selbst gehostete Dienste: Netzwerk, Hardenin
 | [Uptime Kuma (Synology)](UptimeKuma/uptime-kuma-synology.md) | Uptime Kuma auf einem Synology NAS via Docker Compose installieren und betreiben |
 | [VNC Headless Desktop](VNC-Headless-Desktop/vnx-headless-desktop.md) | Headless-Desktop auf Debian-VM (Proxmox) mit TigerVNC und XFCE, zugänglich via Guacamole über Tailscale |
 | [Proxmox-Backup (Synology)](Proxmox/proxmox-backup-synology.md) | VMs, LXC-Container und Proxmox-Konfiguration automatisch auf Synology NAS sichern via NFS |
+| [evdi / DisplayLink Fix (CachyOS)](CachyOS/evdi-displaylink-fix-cachyos.md) | DisplayLink nach Kernel-Update auf CachyOS (Clang-Kernel) reparieren |
