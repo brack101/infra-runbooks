@@ -17,10 +17,21 @@ modprobe: ERROR: could not insert 'evdi': Unknown symbol in module
 
 ## Ursachen
 
-Auf CachyOS wird der Kernel mit **Clang/LLD** kompiliert. DKMS baut Module standardmässig mit GCC, was zu zwei Problemen führt:
+DKMS baut Module standardmässig mit GCC. CachyOS wechselt gelegentlich zwischen **GCC** und **Clang** als Kernel-Compiler, was zu zwei Problemen führen kann:
 
-1. **Unknown symbol** – Clang-spezifische Symbole werden nicht gefunden
+1. **Unknown symbol / bad vermagic** – Compiler-Mismatch zwischen Modul und Kernel
 2. **BTF-Validierungsfehler** – die Debug-Typeninfo (BPF Type Format) ist inkompatibel mit dem Kernel
+
+## Compiler prüfen
+
+Zuerst immer prüfen mit welchem Compiler der laufende Kernel gebaut wurde:
+
+```bash
+cat /proc/version
+```
+
+- Zeigt `gcc` → Standard-Build, kein `LLVM=1` nötig
+- Zeigt `clang` → `LLVM=1` erforderlich
 
 ## Fix
 
@@ -38,12 +49,18 @@ sudo nano /usr/src/evdi-1.14.16/dkms.conf
 
 Die `MAKE[0]`-Zeile ersetzen:
 
+**Bei GCC-Kernel (aktuell):**
+```
+MAKE[0]="make all INCLUDEDIR=/lib/modules/$kernelver/build/include KVERSION=$kernelver DKMS_BUILD=1 KBUILD_SKIP_BTF=1"
+```
+
+**Bei Clang-Kernel:**
 ```
 MAKE[0]="make all INCLUDEDIR=/lib/modules/$kernelver/build/include KVERSION=$kernelver DKMS_BUILD=1 LLVM=1 KBUILD_SKIP_BTF=1"
 ```
 
-- `LLVM=1` setzt automatisch `CC=clang`, `LD=ld.lld`, `AR=llvm-ar` etc.
-- `KBUILD_SKIP_BTF=1` verhindert BTF-Generierung, die der Kernel ablehnt
+- `LLVM=1` setzt automatisch `CC=clang`, `LD=ld.lld`, `AR=llvm-ar` etc. – nur bei Clang-Kernel
+- `KBUILD_SKIP_BTF=1` verhindert BTF-Generierung, die der Kernel ablehnt – immer nötig
 
 ### 3. Modul neu bauen und laden
 
@@ -89,6 +106,7 @@ sudo dmesg | grep -i evdi | tail -10
 
 | Problem | Ursache | Fix |
 |---|---|---|
-| `Unknown symbol` | evdi mit GCC gebaut, Kernel mit Clang | `LLVM=1` in dkms.conf |
-| `BTF: -22` | Clang bettet BTF ein, Kernel lehnt es ab | `KBUILD_SKIP_BTF=1` in dkms.conf |
+| `Unknown symbol` | Compiler-Mismatch Modul/Kernel | `LLVM=1` bei Clang-Kernel, weglassen bei GCC |
+| `BTF: -22` | BTF-Debuginfo inkompatibel | `KBUILD_SKIP_BTF=1` in dkms.conf |
 | `bad vermagic` | Header passen nicht zum Kernel | `linux-cachyos-headers` installieren |
+| Build-Fehler `unknown argument` | `LLVM=1` bei GCC-Kernel gesetzt | `LLVM=1` entfernen, `cat /proc/version` prüfen |
