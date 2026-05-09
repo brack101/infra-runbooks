@@ -39,65 +39,21 @@ sudo nano /usr/src/evdi-1.14.16/dkms.conf
 Die `MAKE[0]`-Zeile ersetzen:
 
 ```
-MAKE[0]="make all INCLUDEDIR=/lib/modules/$kernelver/build/include KVERSION=$kernelver DKMS_BUILD=1 CC=clang LD=ld.lld EXTRA_CFLAGS='-g0'"
+MAKE[0]="make all INCLUDEDIR=/lib/modules/$kernelver/build/include KVERSION=$kernelver DKMS_BUILD=1 LLVM=1 KBUILD_SKIP_BTF=1"
 ```
 
-### 3. Modul neu bauen
+- `LLVM=1` setzt automatisch `CC=clang`, `LD=ld.lld`, `AR=llvm-ar` etc.
+- `KBUILD_SKIP_BTF=1` verhindert BTF-Generierung, die der Kernel ablehnt
+
+### 3. Modul neu bauen und laden
 
 ```bash
 sudo dkms remove evdi/1.14.16 --all
-sudo dkms install evdi/1.14.16 -k $(uname -r)
-```
-
-### 4. BTF-Sektion entfernen
-
-Clang bettet BTF-Debuginfo ein, die der Kernel ablehnt. Manuell entfernen:
-
-```bash
-sudo zstd -d /lib/modules/$(uname -r)/updates/dkms/evdi.ko.zst
-sudo objcopy --remove-section=.BTF /lib/modules/$(uname -r)/updates/dkms/evdi.ko
-sudo zstd --rm /lib/modules/$(uname -r)/updates/dkms/evdi.ko \
-    -o /lib/modules/$(uname -r)/updates/dkms/evdi.ko.zst
-```
-
-### 5. Modul laden und Service starten
-
-```bash
+sudo dkms autoinstall
 sudo modprobe drm_ttm_helper
 sudo modprobe evdi
 sudo systemctl start displaylink
 systemctl status displaylink
-```
-
----
-
-## Dauerhafter Fix (nach Kernel-Updates)
-
-Damit Schritte 3 und 4 nach jedem DKMS-Rebuild automatisch ausgeführt werden, ein Post-Install-Script erstellen:
-
-```bash
-sudo nano /usr/src/evdi-1.14.16/dkms-post-install.sh
-```
-
-Inhalt:
-
-```bash
-#!/bin/bash
-set -e
-KO="/lib/modules/${kernelver}/updates/dkms/evdi.ko"
-zstd -d "${KO}.zst"
-objcopy --remove-section=.BTF "${KO}"
-zstd --rm "${KO}" -o "${KO}.zst"
-```
-
-```bash
-sudo chmod +x /usr/src/evdi-1.14.16/dkms-post-install.sh
-```
-
-In `dkms.conf` hinzufügen (nach der `MAKE[0]`-Zeile):
-
-```
-POST_INSTALL="dkms-post-install.sh"
 ```
 
 ---
@@ -133,6 +89,6 @@ sudo dmesg | grep -i evdi | tail -10
 
 | Problem | Ursache | Fix |
 |---|---|---|
-| `Unknown symbol` | evdi mit GCC gebaut, Kernel mit Clang | `CC=clang LD=ld.lld` in dkms.conf |
-| `BTF: -22` | Clang bettet BTF ein, Kernel lehnt es ab | `.BTF`-Sektion mit objcopy entfernen |
+| `Unknown symbol` | evdi mit GCC gebaut, Kernel mit Clang | `LLVM=1` in dkms.conf |
+| `BTF: -22` | Clang bettet BTF ein, Kernel lehnt es ab | `KBUILD_SKIP_BTF=1` in dkms.conf |
 | `bad vermagic` | Header passen nicht zum Kernel | `linux-cachyos-headers` installieren |
